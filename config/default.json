@@ -1,0 +1,17 @@
+{
+    "mail" : {
+        "service": "",
+        "host": "",
+        "port": "",
+        "secure": "",
+        "auth": {
+            "user": "",
+            "pass": ""
+        },
+        "default": {
+            "from": "",
+            "bcc": "",
+            "subject": ""
+        }
+    }
+}

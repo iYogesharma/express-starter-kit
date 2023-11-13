@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String  @id @default(auto()) @map("_id") @db.ObjectId
+  email            String?              
+  first_name       String?
+  last_name        String?
+  password         String?
+  phone            String?               @unique
+  role             Role?                 @default(USER)
+  created_at       DateTime              @default(now())
+  updated_at       DateTime?             @updatedAt
+  provider         String?
+  provider_id      String?       
+  accessTokens     PersonalAccessToken[]
+  profile          Profile?
+  verificationCode VerificationCode[]
+
+  @@map("users")
+}
+
+model Profile {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  bio        String?
+  user_id    String       @unique @db.ObjectId
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  age        String?
+  gender     Gender?
+  image      String?
+  user       User      @relation(fields: [user_id], references: [id])
+
+  @@map("profiles")
+}
+
+
+
+
+model PersonalAccessToken {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  user_id   String @db.ObjectId
+  device_id String? @unique @default("")
+  token     String  
+  created_at    DateTime  @default(now())
+  updated_at    DateTime? @updatedAt
+  user      User    @relation(fields: [user_id], references: [id])
+
+  @@index([user_id], map: "personal_access_tokens_user_id_key")
+  @@map("personal_access_tokens")
+}
+
+model VerificationCode {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  user_id    String @db.ObjectId
+  otp        String
+  expired_at DateTime
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  user       User      @relation(fields: [user_id], references: [id])
+
+  @@index([user_id], map: "verification_codes_user_id_fkey")
+  @@map("verification_codes")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
